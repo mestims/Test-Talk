@@ -1,13 +1,13 @@
 package br.com.testclass.main
 
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import br.com.testclass.R
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private val viewModel: MainViewModel by viewModel()
 
@@ -19,16 +19,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        viewModel.state.observe(this) {
-            when (it) {
-                is MainState.Success -> {
-                    findViewById<View>(R.id.root_main).setBackgroundColor(it.model.color)
-                }
-                is MainState.Error -> {
-                    Toast.makeText(this, it.error, Toast.LENGTH_LONG).show()
-                }
+        viewModel.state.observe(this, ::handleState)
+    }
+
+    fun handleState(state: MainState) {
+        when (state) {
+            is MainState.Success -> {
+                findViewById<ConstraintLayout>(R.id.root_main).setBackgroundColor(state.model.color)
+            }
+            is MainState.Error -> {
+                Toast.makeText(this, state.error, Toast.LENGTH_LONG).show()
             }
         }
-
     }
 }
